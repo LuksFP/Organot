@@ -18,17 +18,16 @@ const Colaborador = ({ colaborador, corDeFundo, aoDeletar, aoFavoritar }) => {
 
     function handleFotoSelecionada(event) {
         const foto = event.target.files[0];
-        setFotoSelecionada(URL.createObjectURL(foto));
-        salvarFotoLocalmente(colaborador.id, URL.createObjectURL(foto));
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            setFotoSelecionada(e.target.result);
+        };
+        reader.readAsDataURL(foto);
     }
 
     function removerFoto() {
         setFotoSelecionada(null);
         localStorage.removeItem(`foto-${colaborador.id}`);
-    }
-
-    function salvarFotoLocalmente(id, fotoURL) {
-        localStorage.setItem(`foto-${id}`, fotoURL);
     }
 
     return (
