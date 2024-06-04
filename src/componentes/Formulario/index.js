@@ -9,7 +9,6 @@ import './formulario.css';
 const Formulario = ({ aoCadastrar, times, aoCriarTime }) => {
   const [nome, setNome] = useState('');
   const [cargo, setCargo] = useState('');
-  const [imagem, setImagem] = useState('');
   const [time, setTime] = useState('');
   const [nomeTime, setNomeTime] = useState('');
   const [corTime, setCorTime] = useState('');
@@ -17,11 +16,10 @@ const Formulario = ({ aoCadastrar, times, aoCriarTime }) => {
 
   const aoSubmeter = (evento) => {
     evento.preventDefault();
-    console.log('form enviado', nome, cargo, imagem, time);
+    console.log('form enviado', nome, cargo, time);
     aoCadastrar({
       nome,
       cargo,
-      imagem,
       time,
       cargaHoraria // Incluímos a carga horária nos dados do colaborador
     });
@@ -44,12 +42,7 @@ const Formulario = ({ aoCadastrar, times, aoCriarTime }) => {
           valor={cargo}
           aoAlterado={valor => setCargo(valor)}
         />
-        <Campo
-          label='Imagem'
-          placeholder='Informe o endereço da imagem'
-          valor={imagem}
-          aoAlterado={valor => setImagem(valor)}
-        />
+        
         <ListaSuspensa
           obrigatorio={true}
           label='Times'
