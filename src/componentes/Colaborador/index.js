@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './colaborador.css';
-import { AiFillCloseCircle, AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import { AiFillCloseCircle, AiFillHeart, AiOutlineHeart, AiOutlineCamera, AiOutlineDelete } from 'react-icons/ai';
 
-const Colaborador = ({ colaborador, corDeFundo, aoDeletar, aoFavoritar, aoAdicionarFoto }) => {
-    const [fotoSelecionada, setFotoSelecionada] = useState(null);
+const Colaborador = ({ colaborador, corDeFundo, aoDeletar, aoFavoritar }) => {
+    const [fotoSelecionada, setFotoSelecionada] = useState(() => {
+        const fotoSalva = localStorage.getItem(`foto-${colaborador.id}`);
+        return fotoSalva || null;
+    });
+
+    useEffect(() => {
+        localStorage.setItem(`foto-${colaborador.id}`, fotoSelecionada);
+    }, [fotoSelecionada, colaborador.id]);
 
     function favoritar() {
         aoFavoritar(colaborador.id);
@@ -11,29 +18,40 @@ const Colaborador = ({ colaborador, corDeFundo, aoDeletar, aoFavoritar, aoAdicio
 
     function handleFotoSelecionada(event) {
         const foto = event.target.files[0];
-        setFotoSelecionada(foto);
-        aoAdicionarFoto(colaborador.id, foto);
+        setFotoSelecionada(URL.createObjectURL(foto));
+        salvarFotoLocalmente(colaborador.id, URL.createObjectURL(foto));
+    }
+
+    function removerFoto() {
+        setFotoSelecionada(null);
+        localStorage.removeItem(`foto-${colaborador.id}`);
+    }
+
+    function salvarFotoLocalmente(id, fotoURL) {
+        localStorage.setItem(`foto-${id}`, fotoURL);
     }
 
     return (
         <div className="colaborador">
             <AiFillCloseCircle size={25} className="deletar" onClick={() => aoDeletar(colaborador.id)} />
             <div className="cabecalho" style={{ backgroundColor: corDeFundo }}>
-                {fotoSelecionada ? (
-                    <img src={URL.createObjectURL(fotoSelecionada)} alt={colaborador.nome} />
-                ) : (
-                    <label htmlFor={`foto-input-${colaborador.id}`}>
-                        <div className="placeholder">Tirar Foto</div>
-                    </label>
+                <label htmlFor={`foto-input-${colaborador.id}`} className="botao-foto">
+                    <AiOutlineCamera size={25} />
+                    <input
+                        id={`foto-input-${colaborador.id}`}
+                        type="file"
+                        accept="image/*"
+                        capture="user"
+                        onChange={handleFotoSelecionada}
+                        style={{ display: 'none' }}
+                    />
+                </label>
+                {fotoSelecionada && (
+                    <>
+                        <img src={fotoSelecionada} alt={colaborador.nome} />
+                        <AiOutlineDelete size={20} className="remover-foto" onClick={removerFoto} />
+                    </>
                 )}
-                <input
-                    id={`foto-input-${colaborador.id}`}
-                    type="file"
-                    accept="image/*"
-                    capture="user"
-                    onChange={handleFotoSelecionada}
-                    style={{ display: 'none' }}
-                />
             </div>
             <div className="rodape">
                 <h4>{colaborador.nome}</h4>
